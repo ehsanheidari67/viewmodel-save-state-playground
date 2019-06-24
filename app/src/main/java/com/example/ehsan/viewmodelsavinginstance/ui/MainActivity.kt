@@ -21,7 +21,8 @@ class MainActivity : AppCompatActivity() {
 
         val repository = (application as AndroidApplication).repository
 
-        mainViewModel = ViewModelProviders.of(this, CustomViewModelFactory(repository))[MainViewModel::class.java]
+        mainViewModel = ViewModelProviders.of(this,
+            CustomViewModelFactory(this, savedInstanceState, repository))[MainViewModel::class.java]
 
         mainViewModel.simpleDataLiveData.observe(this, Observer<Int> {
             simple_data_text_view.text = it.toString()
@@ -29,27 +30,6 @@ class MainActivity : AppCompatActivity() {
 
         load_data_button.setOnClickListener {
             mainViewModel.loadSimpleData()
-        }
-
-        savedInstanceState?.let { bundle ->
-            Timber.i("${Constants.TIMBER_LOG_TAG}Bundle Not Null")
-            val data = bundle[Constants.BUNDLE_KEY_SIMPLE_DATA]
-            val simpleData: Int
-            if (data is Int) {
-                simpleData = data
-                mainViewModel.setSimpleData(simpleData)
-            }
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-
-        outState?.let { bundle ->
-            mainViewModel.simpleDataLiveData.value?.let { data ->
-                Timber.i("${Constants.TIMBER_LOG_TAG}Bundle Data Saved\t$data")
-                bundle.putInt(Constants.BUNDLE_KEY_SIMPLE_DATA, data)
-            }
         }
     }
 }
