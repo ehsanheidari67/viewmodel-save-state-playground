@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">ViewModelSavingInstance</string>
     <string name="load_data">Load Data</string>
+    <string name="request_network">Request Network</string>
 </resources>

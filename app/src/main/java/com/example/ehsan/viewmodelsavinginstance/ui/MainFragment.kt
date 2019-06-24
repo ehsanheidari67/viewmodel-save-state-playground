@@ -39,17 +39,25 @@ class MainFragment : Fragment() {
             view.simple_data_text_view.text = it.toString()
         })
 
+        mainViewModel.networkResultLiveData.observe(this, Observer<Int> {
+            view.network_result_text_view.text = it.toString()
+        })
+
         view.load_data_button.setOnClickListener {
             mainViewModel.loadSimpleData()
         }
 
+        view.network_result_button.setOnClickListener {
+            mainViewModel.loadResultFromNetwork()
+        }
+
         if (savedInstanceState != null) {
             Timber.i("${Constants.TIMBER_LOG_TAG}Bundle Not Null")
-            val data = savedInstanceState[Constants.BUNDLE_KEY_SIMPLE_DATA]
-            val simpleData: Int
-            if (data is Int) {
-                simpleData = data
-                mainViewModel.setSimpleData(simpleData)
+            (savedInstanceState[Constants.BUNDLE_KEY_SIMPLE_DATA] as? Int)?.let {
+                mainViewModel.setSimpleData(it)
+            }
+            (savedInstanceState[Constants.BUNDLE_KEY_NETWORK_DATA] as? Int)?.let {
+                mainViewModel.networkResultLiveData.value = it
             }
         }
 
@@ -60,8 +68,13 @@ class MainFragment : Fragment() {
         super.onSaveInstanceState(bundle)
 
         mainViewModel.simpleDataLiveData.value?.let { data ->
-            Timber.i("${Constants.TIMBER_LOG_TAG}Bundle Data Saved\t$data")
+            Timber.i("${Constants.TIMBER_LOG_TAG}Bundle SimpleData Saved\t$data")
             bundle.putInt(Constants.BUNDLE_KEY_SIMPLE_DATA, data)
+        }
+
+        mainViewModel.networkResultLiveData.value?.let { data ->
+            Timber.i("${Constants.TIMBER_LOG_TAG}Bundle NetworkData Saved\t$data")
+            bundle.putInt(Constants.BUNDLE_KEY_NETWORK_DATA, data)
         }
 
     }
